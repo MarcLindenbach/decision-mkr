@@ -1,13 +1,12 @@
 import React from 'react';
 import {render} from 'react-dom';
-import Greeting from './greeting.jsx';
+import DecisionTree from './tree.jsx';
 
 class App extends React.Component {
   render () {
     return (
       <div>
-        <p> Hello React!</p>
-        <Greeting name="World" />
+        <DecisionTree path={[[100, 100], [300, 100], [200, 300]]} />
       </div>
     );
   }

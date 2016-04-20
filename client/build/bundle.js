@@ -57,9 +57,9 @@
 	
 	var _reactDom = __webpack_require__(/*! react-dom */ 32);
 	
-	var _greeting = __webpack_require__(/*! ./greeting.jsx */ 166);
+	var _tree = __webpack_require__(/*! ./tree.jsx */ 166);
 	
-	var _greeting2 = _interopRequireDefault(_greeting);
+	var _tree2 = _interopRequireDefault(_tree);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -81,7 +81,11 @@
 	  _createClass(App, [{
 	    key: 'render',
 	    value: function render() {
-	      return _react2.default.createElement(_greeting2.default, { name: 'World' });
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(_tree2.default, { path: [[100, 100], [300, 100], [200, 300]] })
+	      );
 	    }
 	  }]);
 	
@@ -20542,12 +20546,16 @@
 
 /***/ },
 /* 166 */
-/*!**************************!*\
-  !*** ./app/greeting.jsx ***!
-  \**************************/
+/*!**********************!*\
+  !*** ./app/tree.jsx ***!
+  \**********************/
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -20557,36 +20565,59 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var Greeting = function (_React$Component) {
-	  _inherits(Greeting, _React$Component);
+	var DecisionTree = function (_React$Component) {
+	  _inherits(DecisionTree, _React$Component);
 	
-	  function Greeting() {
-	    _classCallCheck(this, Greeting);
+	  function DecisionTree() {
+	    _classCallCheck(this, DecisionTree);
 	
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Greeting).apply(this, arguments));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DecisionTree).apply(this, arguments));
 	  }
 	
-	  _createClass(Greeting, [{
-	    key: "render",
+	  _createClass(DecisionTree, [{
+	    key: 'getPath',
+	    value: function getPath() {
+	      return this.generate_path(this.props.path);
+	    }
+	  }, {
+	    key: 'generate_path',
+	    value: function generate_path(path) {
+	      var _path = _toArray(path);
+	
+	      var head = _path[0];
+	
+	      var tail = _path.slice(1);
+	
+	      var points = '';
+	      tail.forEach(function (point) {
+	        return points += 'L ' + point[0] + ' ' + point[1] + ' ';
+	      });
+	      return 'M ' + head[0] + ' ' + head[0] + ' ' + points + ' z';
+	    }
+	  }, {
+	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
-	        "div",
-	        { className: "greeting" },
-	        "Hello, ",
-	        this.props.name,
-	        "!"
+	        'svg',
+	        { width: '50%', height: '50%', viewBox: '0 0 400 400' },
+	        _react2.default.createElement('path', { d: this.getPath(),
+	          fill: 'orange', stroke: 'black', 'stroke-width': '3' })
 	      );
 	    }
 	  }]);
 	
-	  return Greeting;
+	  return DecisionTree;
 	}(_react2.default.Component);
+	
+	exports.default = DecisionTree;
 
 /***/ }
 /******/ ]);
