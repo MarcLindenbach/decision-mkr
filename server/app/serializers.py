@@ -4,6 +4,28 @@ from app.models import DecisionTree, DecisionNode
 import itertools
 
 
+class DecisionTreeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DecisionTree
+        fields = ('slug', 'title', 'description', 'initial_node')
+        read_only_fields = ('slug', 'initial_node')
+        depth = 10
+
+    def create(self, validated_data):
+        slug = text.slugify(validated_data['title'])
+
+        if DecisionTree.objects.filter(slug=slug).exists():
+            original_slug = slug
+            for slug_prefix in itertools.count(1):
+                slug = '%s-%d' % (original_slug, slug_prefix,)
+                if not DecisionTree.objects.filter(slug=slug).exists():
+                    break
+
+        validated_data['slug'] = slug
+        return DecisionTree.objects.create(**validated_data)
+
+
 class DecisionNodeSerializer(serializers.ModelSerializer):
     decision_tree = serializers.CharField(max_length=50, required=False)
     parent_yes_node = serializers.IntegerField(required=False)
@@ -11,7 +33,7 @@ class DecisionNodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DecisionNode
-        fields = ('parent_yes_node', 'parent_no_node', 'decision_tree', 'text', 'yes_node', 'no_node')
+        fields = ('id', 'parent_yes_node', 'parent_no_node', 'decision_tree', 'text', 'yes_node', 'no_node')
         read_only_fields =('yes_node', 'no_node')
         depth = 10
 
@@ -64,24 +86,3 @@ class DecisionNodeSerializer(serializers.ModelSerializer):
 
         return decision_node
 
-
-class DecisionTreeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DecisionTree
-        fields = ('slug', 'title', 'description',)
-        read_only_fields = ('slug', )
-        depth = 10
-
-    def create(self, validated_data):
-        slug = text.slugify(validated_data['title'])
-
-        if DecisionTree.objects.filter(slug=slug).exists():
-            original_slug = slug
-            for slug_prefix in itertools.count(1):
-                slug = '%s-%d' % (original_slug, slug_prefix,)
-                if not DecisionTree.objects.filter(slug=slug).exists():
-                    break
-
-        validated_data['slug'] = slug
-        return DecisionTree.objects.create(**validated_data)
