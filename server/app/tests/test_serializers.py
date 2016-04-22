@@ -5,40 +5,15 @@ from app.serializers import DecisionTreeSerializer
 
 class DecisionTreeSerializerTest(TestCase):
 
-    def create_decision_tree_without_nodes_using_serializer(self):
+    def create_decision_tree_using_serializer(self):
         serializer = DecisionTreeSerializer(data={'title': 'a tree',
                                                   'description': 'a description'})
-        self.assertEqual(serializer.is_valid(), True)
+        if not serializer.is_valid():
+            self.fail(serializer.errors)
         serializer.save()
-
-    def create_decision_tree_with_nodes_using_serializer(self):
-        serializer = DecisionTreeSerializer(data={'title': 'a tree',
-                                                  'description': 'a description',
-                                                  'initial_node': {
-                                                      'text': 'first-node',
-                                                      'yes_node': {
-                                                          'text': 'yes-node'
-                                                      },
-                                                      'no_node': {
-                                                          'text': 'no-node'
-                                                      }
-                                                    }
-                                                  })
-
-        self.assertEqual(serializer.is_valid(), True)
-        serializer.save()
-
-    def create_decision_tree_with_nodes(self):
-        DecisionNode(text='yes-node').save()
-        DecisionNode(text='no-node').save()
-        DecisionNode(text='first-node',
-                     yes_node=DecisionNode.objects.all()[0],
-                     no_node=DecisionNode.objects.all()[1]).save()
-        DecisionTree(slug='test', title='test', description='test', initial_node=DecisionNode.objects.last()).save()
-        self.assertEqual(DecisionTree.objects.count(), 1)
 
     def test_serializer_creates_decision_tree_with_slug(self):
-        self.create_decision_tree_without_nodes_using_serializer()
+        self.create_decision_tree_using_serializer()
 
         self.assertEqual(DecisionTree.objects.count(), 1)
         decision_tree = DecisionTree.objects.first()
@@ -47,25 +22,16 @@ class DecisionTreeSerializerTest(TestCase):
         self.assertEqual(decision_tree.description, 'a description')
 
     def test_serializer_creates_unique_slug_for_duplicate_titles(self):
-        self.create_decision_tree_without_nodes_using_serializer()
-        self.create_decision_tree_without_nodes_using_serializer()
-        self.create_decision_tree_without_nodes_using_serializer()
+        self.create_decision_tree_using_serializer()
+        self.create_decision_tree_using_serializer()
+        self.create_decision_tree_using_serializer()
 
         decision_trees = DecisionTree.objects.all()
         self.assertEqual(decision_trees[0].slug, 'a-tree')
         self.assertEqual(decision_trees[1].slug, 'a-tree-1')
         self.assertEqual(decision_trees[2].slug, 'a-tree-2')
 
-    def test_serializer_creates_decision_tree_with_nodes(self):
-        self.create_decision_tree_with_nodes_using_serializer()
-
-        decision_tree = DecisionTree.objects.first()
-        self.assertEqual(decision_tree.title, 'a tree')
-        self.assertEqual(decision_tree.initial_node.text, 'first-node')
-        self.assertEqual(decision_tree.initial_node.yes_node.text, 'yes-node')
-        self.assertEqual(decision_tree.initial_node.no_node.text, 'no-node')
-
-    def test_serializer_serializes_decision_tree_without_nodes(self):
+    def test_serialize_decision_tree(self):
         DecisionTree(slug='a-tree', title='a tree', description='this is a tree').save()
         DecisionTree(slug='a-tree-1', title='a tree', description='this is a second tree').save()
         self.assertEqual(DecisionTree.objects.count(), 2)
@@ -80,13 +46,3 @@ class DecisionTreeSerializerTest(TestCase):
         self.assertEqual(second_serializer.data['slug'], 'a-tree-1')
         self.assertEqual(second_serializer.data['title'], 'a tree')
         self.assertEqual(second_serializer.data['description'], 'this is a second tree')
-
-    def test_serializer_serializes_decision_tree_with_nodes(self):
-        self.create_decision_tree_with_nodes()
-
-        serializer = DecisionTreeSerializer(DecisionTree.objects.all()[0])
-
-        self.assertEqual(serializer.data['slug'], 'test')
-        self.assertEqual(serializer.data['initial_node']['text'], 'first-node')
-        self.assertEqual(serializer.data['initial_node']['yes_node']['text'], 'yes-node')
-        self.assertEqual(serializer.data['initial_node']['no_node']['text'], 'no-node')

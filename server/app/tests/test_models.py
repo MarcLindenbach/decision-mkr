@@ -61,3 +61,6 @@ class DecisionTreeAndNodeModelTest(TestCase):
         self.assertEqual(decision_tree.initial_node.text, 'First-Node')
         self.assertEqual(decision_tree.initial_node.yes_node.text, 'Yes-Node')
         self.assertEqual(decision_tree.initial_node.no_node.text, 'No-Node')
+
+        decision_node = DecisionNode.objects.last()
+        self.assertEqual(decision_node.decisiontree.pk, decision_tree.pk)
