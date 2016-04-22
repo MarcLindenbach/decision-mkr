@@ -1,5 +1,4 @@
 from django.test import TestCase
-from rest_framework import serializers
 from app.models import DecisionTree, DecisionNode
 from app.serializers import DecisionTreeSerializer, DecisionNodeSerializer
 
@@ -51,6 +50,10 @@ class DecisionTreeSerializerTest(TestCase):
         self.assertEqual(second_serializer.data['slug'], 'a-tree-1')
         self.assertEqual(second_serializer.data['title'], 'a tree')
         self.assertEqual(second_serializer.data['description'], 'this is a second tree')
+
+
+class DecisionTreeListSerializerTest(TestCase):
+    pass
 
 
 class DecisionNodeSerializerTest(TestCase):

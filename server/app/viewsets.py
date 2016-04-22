@@ -1,12 +1,17 @@
 from rest_framework import viewsets
 from app.models import DecisionTree, DecisionNode
-from app.serializers import DecisionTreeSerializer, DecisionNodeSerializer
+from app.serializers import DecisionTreeSerializer, DecisionTreeListSerializer, DecisionNodeSerializer
 
 
 class DecisionTreeViewSet(viewsets.ModelViewSet):
     queryset = DecisionTree.objects.all()
-    serializer_class = DecisionTreeSerializer
     lookup_field = 'slug'
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return DecisionTreeListSerializer
+        else:
+            return DecisionTreeSerializer
 
 
 class DecisionNodeViewSet(viewsets.ModelViewSet):

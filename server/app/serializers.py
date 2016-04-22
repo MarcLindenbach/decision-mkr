@@ -26,6 +26,13 @@ class DecisionTreeSerializer(serializers.ModelSerializer):
         return DecisionTree.objects.create(**validated_data)
 
 
+class DecisionTreeListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DecisionTree
+        fields = ('slug', 'title', 'description')
+        read_only_fields = ('slug', 'title', 'description')
+
+
 class DecisionNodeSerializer(serializers.ModelSerializer):
     decision_tree = serializers.CharField(max_length=50, required=False)
     parent_yes_node = serializers.IntegerField(required=False)
