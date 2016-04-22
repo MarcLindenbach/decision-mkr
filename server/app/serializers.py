@@ -35,8 +35,15 @@ class DecisionNodeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         slug = ''
+        parent_yes_node_pk = -1
+        parent_no_node_pk = -1
+
         if 'decision_tree' in validated_data:
             slug = validated_data.pop('decision_tree')
+        if 'parent_yes_node' in validated_data:
+            parent_yes_node_pk = validated_data.pop('parent_yes_node')
+        if 'parent_no_node' in validated_data:
+            parent_no_node_pk = validated_data.pop('parent_no_node')
 
         decision_node = DecisionNode.objects.create(**validated_data)
 
@@ -44,6 +51,16 @@ class DecisionNodeSerializer(serializers.ModelSerializer):
             decision_tree = DecisionTree.objects.filter(slug=slug).first()
             decision_tree.initial_node = decision_node
             decision_tree.save()
+
+        if parent_yes_node_pk >= 0:
+            parent_node = DecisionNode.objects.filter(pk=parent_yes_node_pk).first()
+            parent_node.yes_node = decision_node
+            parent_node.save()
+
+        if parent_no_node_pk >= 0:
+            parent_node = DecisionNode.objects.filter(pk=parent_no_node_pk).first()
+            parent_node.no_node = decision_node
+            parent_node.save()
 
         return decision_node
 
@@ -68,4 +85,3 @@ class DecisionTreeSerializer(serializers.ModelSerializer):
 
         validated_data['slug'] = slug
         return DecisionTree.objects.create(**validated_data)
-
