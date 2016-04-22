@@ -1,4 +1,5 @@
 from django.test import TestCase
+from rest_framework import serializers
 from app.models import DecisionTree, DecisionNode
 from app.serializers import DecisionTreeSerializer, DecisionNodeSerializer
 
@@ -92,3 +93,25 @@ class DecisionNodeSerializerTest(TestCase):
 
         decision_node = DecisionNode.objects.first()
         self.assertEqual(decision_node.text, 'a node')
+
+    def test_serializer_adds_decision_node_to_correct_tree(self):
+        DecisionTree(slug='a-slug', title='a tree').save()
+        decision_tree_slug = DecisionTree.objects.first().slug
+
+        serializer = DecisionNodeSerializer(data={'decision_tree': decision_tree_slug,
+                                                  'text': 'a node'})
+
+        if not serializer.is_valid():
+            self.fail(serializer.errors)
+
+        serializer.save()
+
+        decision_tree = DecisionTree.objects.first()
+        self.assertEqual(decision_tree.initial_node.text, 'a node')
+
+    def test_serializer_raises_error_if_tree_does_not_exist(self):
+        serializer = DecisionNodeSerializer(data={'decision_tree': 'a-slug-that-does-not-exist',
+                                                  'text': 'a node'})
+
+        if serializer.is_valid():
+            self.fail('Decision tree slug does not exist, this should have failed')
