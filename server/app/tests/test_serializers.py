@@ -39,6 +39,9 @@ class DecisionTreeSerializerTest(TestCase):
         self.assertEqual(decision_trees[1].slug, 'a-tree-1')
         self.assertEqual(decision_trees[2].slug, 'a-tree-2')
 
+    def test_serializer_creates_decision_tree_with_nodes(self):
+        pass
+
     def test_serializer_serializes_decision_tree_without_nodes(self):
         DecisionTree(slug='a-tree', title='a tree', description='this is a tree').save()
         DecisionTree(slug='a-tree-1', title='a tree', description='this is a second tree').save()
