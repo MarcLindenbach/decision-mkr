@@ -1,6 +1,6 @@
 from django.test import TestCase
 from app.models import DecisionTree, DecisionNode
-from app.serializers import DecisionTreeSerializer, DecisionNodeSerializer
+from app.serializers import DecisionTreeSerializer, DecisionTreeListSerializer, DecisionNodeSerializer
 
 
 class DecisionTreeSerializerTest(TestCase):
@@ -35,7 +35,7 @@ class DecisionTreeSerializerTest(TestCase):
         self.assertEqual(decision_trees[1].slug, 'a-tree-1')
         self.assertEqual(decision_trees[2].slug, 'a-tree-2')
 
-    def test_serialize_decision_tree(self):
+    def test_serialize_decision_tree_displays_correct_data(self):
         DecisionTree(slug='a-tree', title='a tree', description='this is a tree').save()
         DecisionTree(slug='a-tree-1', title='a tree', description='this is a second tree').save()
         self.assertEqual(DecisionTree.objects.count(), 2)
@@ -46,14 +46,33 @@ class DecisionTreeSerializerTest(TestCase):
         self.assertEqual(first_serializer.data['slug'], 'a-tree')
         self.assertEqual(first_serializer.data['title'], 'a tree')
         self.assertEqual(first_serializer.data['description'], 'this is a tree')
+        self.assertIn('initial_node', first_serializer.data)
 
         self.assertEqual(second_serializer.data['slug'], 'a-tree-1')
         self.assertEqual(second_serializer.data['title'], 'a tree')
         self.assertEqual(second_serializer.data['description'], 'this is a second tree')
+        self.assertIn('initial_node', second_serializer.data)
 
 
 class DecisionTreeListSerializerTest(TestCase):
-    pass
+
+    def test_serialize_decision_tree_displays_correct_data(self):
+        DecisionTree(slug='a-tree', title='a tree', description='this is a tree').save()
+        DecisionTree(slug='a-tree-1', title='a tree', description='this is a second tree').save()
+        self.assertEqual(DecisionTree.objects.count(), 2)
+
+        first_serializer = DecisionTreeListSerializer(DecisionTree.objects.all()[0])
+        second_serializer = DecisionTreeListSerializer(DecisionTree.objects.all()[1])
+
+        self.assertEqual(first_serializer.data['slug'], 'a-tree')
+        self.assertEqual(first_serializer.data['title'], 'a tree')
+        self.assertEqual(first_serializer.data['description'], 'this is a tree')
+        self.assertNotIn('initial_node', first_serializer.data)
+
+        self.assertEqual(second_serializer.data['slug'], 'a-tree-1')
+        self.assertEqual(second_serializer.data['title'], 'a tree')
+        self.assertEqual(second_serializer.data['description'], 'this is a second tree')
+        self.assertNotIn('initial_node', second_serializer.data)
 
 
 class DecisionNodeSerializerTest(TestCase):
