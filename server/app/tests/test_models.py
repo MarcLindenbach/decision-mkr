@@ -18,6 +18,10 @@ class DecisionTreeAndNodeModelTest(TestCase):
         with self.assertRaises(ValidationError):
             DecisionTree(slug='A-new-node', title='A new node', description='Hello world!').full_clean()
 
+    def test_empty_slug_raises_exceptions(self):
+        with self.assertRaises(ValidationError):
+            DecisionTree(slug='', title='A new node', description='Hello world!').full_clean()
+
     def test_creation_and_retrieval_of_decision_node(self):
         DecisionNode(text='Hello world!').save()
         DecisionNode(text='Goodbye world!').save()
