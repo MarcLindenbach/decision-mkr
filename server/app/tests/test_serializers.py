@@ -1,6 +1,6 @@
 from django.test import TestCase
 from app.models import DecisionTree, DecisionNode
-from app.serializers import DecisionTreeSerializer
+from app.serializers import DecisionTreeSerializer, DecisionNodeSerializer
 
 
 class DecisionTreeSerializerTest(TestCase):
@@ -46,3 +46,32 @@ class DecisionTreeSerializerTest(TestCase):
         self.assertEqual(second_serializer.data['slug'], 'a-tree-1')
         self.assertEqual(second_serializer.data['title'], 'a tree')
         self.assertEqual(second_serializer.data['description'], 'this is a second tree')
+
+
+class DecisionNodeSerializerTest(TestCase):
+    def create_nested_decision_nodes(self):
+        DecisionNode(text='yes-yes-node').save()                     # 0
+        DecisionNode(text='yes-no-node').save()                      # 1
+        DecisionNode(text='yes-node',                                # 2
+                     yes_node=DecisionNode.objects.all()[0],
+                     no_node=DecisionNode.objects.all()[1]).save()
+        DecisionNode(text='no-node').save()                          # 3
+        DecisionNode(text='first-node',                              # 4
+                     yes_node=DecisionNode.objects.all()[2],
+                     no_node=DecisionNode.objects.all()[3]).save()
+        DecisionTree(slug='test', title='test', description='test', initial_node=DecisionNode.objects.last()).save()
+
+    def test_serializer_create_treeless_decision_nodes(self):
+        pass
+
+    def test_serialize_nested_decision_nodes(self):
+        self.create_nested_decision_nodes()
+
+        serializer = DecisionNodeSerializer(DecisionNode.objects.last())
+        print(serializer.data)
+        self.assertEqual(serializer.data['text'], 'first-node')
+        self.assertEqual(serializer.data['yes_node']['text'], 'yes-node')
+        self.assertEqual(serializer.data['yes_node']['yes_node']['text'], 'yes-yes-node')
+        self.assertEqual(serializer.data['yes_node']['no_node']['text'], 'yes-no-node')
+        self.assertEqual(serializer.data['no_node']['text'], 'no-node')
+

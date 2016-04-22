@@ -11,13 +11,18 @@ class RecursiveField(serializers.Serializer):
 
 
 class DecisionNodeSerializer(serializers.ModelSerializer):
-    yes_node = RecursiveField(required=False)
-    no_node = RecursiveField(required=False)
+    # decision_tree_pk = serializers.IntegerField(required=False)
+    # parent_node_pk = serializers.IntegerField(required=False)
+    # yes_node = RecursiveField(required=False)
+    # no_node = RecursiveField(required=False)
 
     class Meta:
         model = DecisionNode
         fields = ('text', 'yes_node', 'no_node')
         depth = 10
+
+    def create(self, validated_data):
+        print(validated_data)
 
 
 class DecisionTreeSerializer(serializers.ModelSerializer):
