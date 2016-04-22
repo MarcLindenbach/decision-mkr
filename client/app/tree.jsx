@@ -2,23 +2,54 @@ import React from 'react';
 
 export default class DecisionTree extends React.Component {
   
-  getPath() {
-    return this.generate_path(this.props.path);
+  constructor() {
+    super();
+    this.viewBoxWidth = 400;
+    this.viewBoxHeight = 400;
+    this.viewBoxMargin = 10;
   }
   
-  generate_path(path) {
-    const [head, ...tail] = path
+  getViewBoxBounds() {
+    return `0 0 ${this.viewBoxWidth} ${this.viewBoxHeight}`;
+  }
+  
+  getDecisionTreeNodes() {
+    let nodes = [];
+    let totalHeight = this.props.treeHeight
+    for (let line = 1; line <= totalHeight; line++) {
+      let lineHeight = (this.viewBoxHeight / totalHeight);
+      let nodesOnLine = this.getNodesPerLine(line);
+      for (let node = 1; node <= nodesOnLine; node++){
+        let nodeWidth = (this.viewBoxWidth / nodesOnLine);
+        nodes.push({
+          y: (lineHeight * (line - 1)) + (lineHeight / 2),
+          x: (nodeWidth * (node - 1)) + (nodeWidth / 2)
+        });
+      }
+    }
+    
+    return nodes;
+  }
+  
+  getNodesPerLine(line) {
+    return Math.pow(2, line-1);
+  }
+  
+  generatePath(pathPoints) {
+    const [head, ...tail] = pathPoints;
     let points = '';
     tail.forEach((point) => points += `L ${point[0]} ${point[1]} `);
-    return `M ${head[0]} ${head[0]} ${points} z`;
+    return `M ${head[0]} ${head[0]} ${points}`;
   }
+  
+  
   
   render() {
     return (
-      <svg width="50%" height="50%" viewBox="0 0 400 400">
-        <path d={ this.getPath() }
-            fill="orange" stroke="black" stroke-width="3">
-        </path>
+      <svg width="50%" height="50%" viewBox={this.getViewBoxBounds()}>
+        {this.getDecisionTreeNodes().map((node) => {
+          return <circle cx={node.x} cy ={node.y} r="10"/>;
+        })}
       </svg>
     );
   }
