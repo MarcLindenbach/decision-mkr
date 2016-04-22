@@ -6,19 +6,31 @@ import itertools
 
 class DecisionNodeSerializer(serializers.ModelSerializer):
     decision_tree = serializers.CharField(max_length=50, required=False)
+    parent_yes_node = serializers.IntegerField(required=False)
+    parent_no_node = serializers.IntegerField(required=False)
 
     class Meta:
         model = DecisionNode
-        fields = ('decision_tree', 'text', 'yes_node', 'no_node')
+        fields = ('parent_yes_node', 'parent_no_node', 'decision_tree', 'text', 'yes_node', 'no_node')
+        read_only_fields =('yes_node', 'no_node')
         depth = 10
 
     def validate(self, data):
-        print(data)
         if 'decision_tree' in data:
             slug = data['decision_tree']
             if not DecisionTree.objects.filter(slug=slug).exists():
-                print('raising error')
                 raise serializers.ValidationError('No decision tree exists with slug %s' % slug)
+
+        if 'parent_yes_node' in data:
+            pk = int(data['parent_yes_node'])
+            if not DecisionNode.objects.filter(pk=pk).exists():
+                raise serializers.ValidationError('No parent node exists with pk %d' % pk)
+
+        if 'parent_no_node' in data:
+            pk = int(data['parent_no_node'])
+            if not DecisionNode.objects.filter(pk=pk).exists():
+                raise serializers.ValidationError('No parent node exists with pk %d' % pk)
+            
         return data
 
     def create(self, validated_data):

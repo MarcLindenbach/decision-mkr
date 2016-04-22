@@ -115,3 +115,28 @@ class DecisionNodeSerializerTest(TestCase):
 
         if serializer.is_valid():
             self.fail('Decision tree slug does not exist, this should have failed')
+
+    def test_serializer_adds_yes_decision_node_to_correct_parent(self):
+        pass
+
+        # DecisionNode(text='parent node').save()
+        # parent_node = DecisionNode.objects.first()
+
+        # serializer = DecisionNodeSerializer(data={'parent_yes_node': parent_node.pk,
+        #                                         'text': 'a node'})
+
+    def test_serializer_raises_error_if_yes_parent_does_not_exist(self):
+        serializer = DecisionNodeSerializer(data={'parent_yes_node': 1,
+                                                  'text': 'a node'})
+
+        if serializer.is_valid():
+            self.fail('parent node does not exist, this should have failed')
+
+    def test_serializer_raises_error_if_no_parent_does_not_exist(self):
+        serializer = DecisionNodeSerializer(data={'parent_no_node': 1,
+                                                  'text': 'a node'})
+
+        if serializer.is_valid():
+            self.fail('parent node does not exist, this should have failed')
+
+
