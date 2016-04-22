@@ -4,8 +4,8 @@ export default class DecisionTree extends React.Component {
   
   constructor() {
     super();
-    this.viewBoxWidth = 400;
-    this.viewBoxHeight = 400;
+    this.viewBoxWidth = 600;
+    this.viewBoxHeight = 300;
     this.viewBoxMargin = 10;
   }
   
@@ -46,7 +46,7 @@ export default class DecisionTree extends React.Component {
   
   render() {
     return (
-      <svg width="50%" height="50%" viewBox={this.getViewBoxBounds()}>
+      <svg width="100%" height="100%" viewBox={this.getViewBoxBounds()}>
         {this.getDecisionTreeNodes().map((node) => {
           return <circle cx={node.x} cy ={node.y} r="10"/>;
         })}

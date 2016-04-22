@@ -4,6 +4,8 @@ import DecisionTree from './tree.jsx';
 import {myData, decisionTreeData} from './data.jsx';
 
 let treeHeight = getDecisionTreeHeight(decisionTreeData);
+let nodesPerLevel = getNodesPerLevel(getNodeLevels(decisionTreeData));
+console.log(nodesPerLevel);
 
 class App extends React.Component {
   render () {
@@ -16,6 +18,30 @@ class App extends React.Component {
 }
 
 render(<App/>, document.getElementById('app'));
+
+function getNodesPerLevel(nodeLevels) {
+  let counts = []
+  for (var i; i < nodeLevels.length; i++) {
+    counts[nodeLevels[i]] = 1 + (counts[nodeLevels[i]] || 0);
+  }
+  return counts[2];
+}
+
+function getNodeLevels(tree, nodeLevel=1) {
+  let decisionTreeData = [nodeLevel];
+  
+  nodeLevel += 1;
+  
+  if (tree.yesNode !== null) {
+    decisionTreeData = decisionTreeData.concat(getNodeLevels(tree.yesNode, nodeLevel))
+  }
+  
+  if (tree.noNode !== null) {
+    decisionTreeData = decisionTreeData.concat(getNodeLevels(tree.noNode, nodeLevel))
+  }
+  
+  return decisionTreeData;
+}
 
 function getDecisionTreeHeight(tree, treeHeight=0) {
   treeHeight += 1;
