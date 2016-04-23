@@ -1,12 +1,12 @@
 import React from 'react';
+import TreeNode from './treeNode.jsx'
 
 export default class DecisionTree extends React.Component {
   
   constructor() {
     super();
-    this.viewBoxWidth = 600;
-    this.viewBoxHeight = 300;
-    this.viewBoxMargin = 10;
+    this.viewBoxWidth = 500;
+    this.viewBoxHeight = 800;
   }
   
   getViewBoxBounds() {
@@ -60,11 +60,11 @@ export default class DecisionTree extends React.Component {
   
   render() {
     return (
-      <svg width="100%" height="100%" viewBox={this.getViewBoxBounds()}>
+      <svg width={`${this.viewBoxWidth}px`} height={`${this.viewBoxHeight}px`} viewBox={`0 0 ${this.viewBoxWidth} ${this.viewBoxHeight}`}>
         {this.getDecisionNodes().map((node) => {
           return (
             //<circle cx={node.x} cy ={node.y} r="10">
-            <text x={node.x} y={node.y} stroke="red">{node.text}</text>
+            <TreeNode x={node.x} y={node.y} text={node.text} />
             //</circle>
           );
         })}
