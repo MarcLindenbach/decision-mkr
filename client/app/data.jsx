@@ -1,37 +1,40 @@
-export var myData = {
-  path: [[1, 1], [200, 300]],
-};
-
 export const decisionTreeData = {
-  heading: 'Start',
-  yesNode: {
-    heading: "Yes",
-    yesNode: {
-      heading: "Yes-Yes",
-      yesNode: null,
-      noNode: null
+  id: 1,
+  text: 'Start',
+  yes_node: {
+    id: 2,
+    text: "Yes",
+    yes_node: {
+      id: 3,
+      text: "Yes-Yes",
+      yes_node: null,
+      no_node: null
     },
-    noNode: {
-      heading: "Yes-No",
-      yesNode: null,
-      noNode: null
+    no_node: {
+      id: 4,
+      text: "Yes-No",
+      yes_node: null,
+      no_node: null
     }
   },
-  noNode: {
-    heading: "No",
-    yesNode: {
-      heading: "No-Yes",
-      yesNode: null,
-      noNode: null
+  no_node: {
+    id: 5,
+    text: "No",
+    yes_node: {
+      text: "No-Yes",
+      yes_node: null,
+      no_node: null
     },
-    noNode: {
-      heading: "No-No",
-      yesNode: {
-        heading: "No-No-Yes",
-        yesNode: null,
-        noNode: null
+    no_node: {
+      id: 6,
+      text: "No-No",
+      yes_node: {
+        id: 7,
+        text: "No-No-Yes",
+        yes_node: null,
+        no_node: null
       },
-      noNode: null
+      no_node: null
     }
   }
 };

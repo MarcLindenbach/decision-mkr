@@ -27,6 +27,7 @@ class DecisionTreeSerializer(serializers.ModelSerializer):
 
 
 class DecisionTreeListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = DecisionTree
         fields = ('slug', 'title', 'description')
