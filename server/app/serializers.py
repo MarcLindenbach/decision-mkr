@@ -9,7 +9,6 @@ class TreeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tree
         fields = ('slug', 'title', 'description', 'root_node')
-
         read_only_fields = ('slug', )
         depth = 10
 
@@ -25,3 +24,12 @@ class TreeSerializer(serializers.ModelSerializer):
 
         validated_data['slug'] = slug
         return Tree.objects.create(**validated_data)
+
+
+class NodeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Node
+        fields = ('predicate', 'criteria', 'children',)
+        read_only_fields = ('children', )
+        depth = 10

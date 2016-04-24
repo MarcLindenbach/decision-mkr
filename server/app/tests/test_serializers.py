@@ -1,5 +1,5 @@
 from django.test import TestCase
-from app.serializers import TreeSerializer
+from app.serializers import TreeSerializer, NodeSerializer
 from app.models import Tree, Node
 from .helpers import create_complex_decision_tree
 
@@ -78,3 +78,27 @@ class TreeSerializerTest(TestCase):
 
         self.assertEqual(tree.title, 'new title')
         self.assertEqual(tree.description, 'desc')
+
+
+class NodeSerializerTest(TestCase):\
+
+    def test_serialize_nodes(self):
+        create_complex_decision_tree()
+        serializer = NodeSerializer(Node.objects.first())
+
+        self.assertEqual(serializer.data['criteria'], 'mood')
+
+        mood_children = serializer.data['children']
+        self.assertEqual(mood_children[0]['predicate'], 'happy')
+        self.assertEqual(mood_children[1]['predicate'], 'sad')
+        self.assertEqual(mood_children[2]['predicate'], 'just ok')
+
+        self.assertEqual(mood_children[0]['criteria'], 'how happy')
+        self.assertEqual(mood_children[1]['criteria'], 'i am sorry to hear that')
+        self.assertEqual(mood_children[2]['criteria'], 'ok then!')
+
+        happy_children = mood_children[0]['children']
+        self.assertEqual(happy_children[0]['predicate'], 'very happy')
+        self.assertEqual(happy_children[1]['predicate'], 'kind of happy')
+        self.assertEqual(happy_children[0]['criteria'], 'i am glad to hear that')
+        self.assertEqual(happy_children[1]['criteria'], 'wish you were happier')
