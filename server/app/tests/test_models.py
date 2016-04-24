@@ -1,51 +1,13 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from app.models import Tree, Node
+from .helpers import create_complex_decision_tree
 
 
 class TestDecisionTreeModels(TestCase):
 
-    @staticmethod
-    def create_complex_decision_tree():
-        tree = Tree(slug='slug', title='title', description='description')
-        tree.save()
-
-        root_node = Node(criteria='mood')
-        root_node.save()
-
-        tree.root_node = root_node
-        tree.save()
-
-        happy = Node(predicate='happy', criteria='how happy')
-        happy.save()
-
-        very_happy = Node(predicate='very happy', criteria='i am glad to hear that')
-        very_happy.save()
-
-        kind_of_happy = Node(predicate='kind of happy', criteria='wish you were happier')
-        kind_of_happy.save()
-
-        happy.children.add(kind_of_happy)
-        happy.children.add(very_happy)
-        happy.save()
-
-        root_node.children.add(happy)
-        root_node.save()
-
-        sad = Node(predicate='sad', criteria='i am sorry to hear that')
-        sad.save()
-
-        root_node.children.add(sad)
-        root_node.save()
-
-        melancholy = Node(predicate='just ok', criteria='ok then!')
-        melancholy.save()
-
-        root_node.children.add(melancholy)
-        root_node.save()
-
     def test_retrieval_of_decision_tree(self):
-        self.create_complex_decision_tree()
+        create_complex_decision_tree()
         tree = Tree.objects.first()
 
         self.assertEqual(tree.slug, 'slug')
@@ -53,7 +15,7 @@ class TestDecisionTreeModels(TestCase):
         self.assertEqual(tree.description, 'description')
 
     def test_retrieval_of_decision_tree_nodes(self):
-        self.create_complex_decision_tree()
+        create_complex_decision_tree()
         tree = Tree.objects.first()
 
         self.assertEqual(tree.root_node.criteria, 'mood')
