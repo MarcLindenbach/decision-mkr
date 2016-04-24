@@ -1,13 +1,13 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from app.models import DecisionTree, Node
+from app.models import Tree, Node
 
 
 class TestDecisionTreeModels(TestCase):
 
     @staticmethod
     def create_complex_decision_tree():
-        tree = DecisionTree(slug='slug', title='title', description='description')
+        tree = Tree(slug='slug', title='title', description='description')
         tree.save()
 
         root_node = Node(criteria='mood')
@@ -46,7 +46,7 @@ class TestDecisionTreeModels(TestCase):
 
     def test_retrieval_of_decision_tree(self):
         self.create_complex_decision_tree()
-        tree = DecisionTree.objects.first()
+        tree = Tree.objects.first()
 
         self.assertEqual(tree.slug, 'slug')
         self.assertEqual(tree.title, 'title')
@@ -54,7 +54,7 @@ class TestDecisionTreeModels(TestCase):
 
     def test_retrieval_of_decision_tree_nodes(self):
         self.create_complex_decision_tree()
-        tree = DecisionTree.objects.first()
+        tree = Tree.objects.first()
 
         self.assertEqual(tree.root_node.criteria, 'mood')
         self.assertEqual(tree.root_node.children.count(), 3)
@@ -75,7 +75,7 @@ class TestDecisionTreeModels(TestCase):
         self.assertEqual(tree.root_node.children.all()[2].criteria, 'ok then!')
 
     def test_duplicate_slugs_validation(self):
-        DecisionTree(slug='yolo', title='swag').save()
+        Tree(slug='yolo', title='swag').save()
 
         with self.assertRaises(ValidationError):
-            DecisionTree(slug='yolo', title='swag-2').full_clean()
+            Tree(slug='yolo', title='swag-2').full_clean()
