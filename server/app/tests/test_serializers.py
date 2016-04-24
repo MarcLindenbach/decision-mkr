@@ -115,3 +115,12 @@ class NodeSerializerTest(TestCase):
         self.assertEqual(serializer.data['predicate'], 'happy')
         self.assertEqual(serializer.data['criteria'], 'how happy')
         self.assertEqual(serializer.data['parent'], 1)
+
+    def test_create_node(self):
+        pass
+
+    def test_create_node_with_no_criteria_is_invalid(self):
+        pass
+
+    def test_create_node_with_invalid_parent_is_invalid(self):
+        pass
