@@ -10,13 +10,14 @@ class RecursiveField(serializers.Serializer):
         return serializer.data
 
 
-class ListNodeSerializer(serializers.ModelSerializer):
+class NodeListSerializer(serializers.ModelSerializer):
 
     node_set = RecursiveField(many=True)
 
     class Meta:
         model = Node
-        fields = ('predicate', 'criteria', 'node_set',)
+        fields = ('id', 'predicate', 'criteria', 'node_set',)
+        read_only_fields = ('id',)
         depth = 10
 
 
@@ -26,7 +27,7 @@ class NodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Node
-        fields = ('predicate', 'criteria', 'parent')
+        fields = ('id', 'predicate', 'criteria', 'parent')
         depth = 10
 
     def validate(self, data):

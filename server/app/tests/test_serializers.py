@@ -1,5 +1,5 @@
 from django.test import TestCase
-from app.serializers import TreeSerializer, ListNodeSerializer, NodeSerializer
+from app.serializers import TreeSerializer, NodeListSerializer, NodeSerializer
 from app.models import Tree, Node
 from .helpers import create_complex_decision_tree
 
@@ -83,7 +83,7 @@ class ListNodeSerializerTest(TestCase):
 
     def test_serialize_nodes(self):
         create_complex_decision_tree()
-        serializer = ListNodeSerializer(Node.objects.first())
+        serializer = NodeListSerializer(Node.objects.first())
 
         self.assertEqual(serializer.data['criteria'], 'mood')
 
