@@ -72,7 +72,10 @@ class TreeSerializerTest(TestCase):
         self.assertEqual(tree.root_node.criteria, 'yolo')
 
     def test_add_invalid_node_to_tree_is_invalid(self):
-        pass
+        serializer = TreeSerializer(data={'title': 'yolo', 'description': 'hello', 'root_node': 44})
+
+        if serializer.is_valid():
+            self.fail('Serializer is not valid, root_node of 44 should not exist')
 
 
 class ListNodeSerializerTest(TestCase):

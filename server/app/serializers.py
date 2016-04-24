@@ -40,6 +40,13 @@ class TreeSerializer(serializers.ModelSerializer):
         read_only_fields = ('slug', )
         depth = 10
 
+    def validate(self, data):
+        if 'root_node' in data:
+            root_pk = data['root_node']['pk']
+            if not Node.objects.filter(id=root_pk).exists():
+                raise serializers.ValidationError('Node %s does not exist' % root_pk)
+        return data
+
     def create(self, validated_data):
         slug = text.slugify(validated_data['title'])
 
