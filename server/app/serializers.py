@@ -39,6 +39,9 @@ class NodeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if 'parent' in validated_data:
             parent_id = validated_data.pop('parent')['pk']
+        else:
+            parent_id = None
+
         instance = Node(**validated_data)
         if parent_id:
             instance.parent_id = parent_id
@@ -82,7 +85,18 @@ class TreeSerializer(serializers.ModelSerializer):
                     break
 
         validated_data['slug'] = slug
-        return Tree.objects.create(**validated_data)
+
+        if 'root_node' in validated_data:
+            root_id = validated_data.pop('root_node')['pk']
+        else:
+            root_id = None
+
+        tree = Tree(**validated_data)
+        if root_id:
+            tree.root_node_id = root_id
+
+        tree.save()
+        return tree
 
     def update(self, instance, validated_data):
         if 'root_node' in validated_data:

@@ -6,7 +6,7 @@ from .helpers import create_complex_decision_tree
 
 class TestDecisionTreeModels(TestCase):
 
-    def test_retrieval_of_decision_tree(self):
+    def test_retrieval_of_tree(self):
         create_complex_decision_tree()
         tree = Tree.objects.first()
 
@@ -14,7 +14,7 @@ class TestDecisionTreeModels(TestCase):
         self.assertEqual(tree.title, 'title')
         self.assertEqual(tree.description, 'description')
 
-    def test_retrieval_of_decision_tree_nodes(self):
+    def test_retrieval_of_tree_nodes(self):
         create_complex_decision_tree()
         tree = Tree.objects.first()
         root_node = tree.root_node
@@ -37,7 +37,7 @@ class TestDecisionTreeModels(TestCase):
         self.assertEqual(root_node.node_set.all()[2].predicate, 'just ok')
         self.assertEqual(root_node.node_set.all()[2].criteria, 'ok then!')
 
-    def test_duplicate_slugs_validation(self):
+    def test_duplicate_slug_validation(self):
         Tree(slug='yolo', title='swag').save()
 
         with self.assertRaises(ValidationError):

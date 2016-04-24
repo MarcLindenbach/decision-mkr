@@ -15,7 +15,8 @@ class TreeSerializerTest(TestCase):
         self.assertEqual(serializer.data['description'], 'description')
 
     def test_create_tree(self):
-        serializer = TreeSerializer(data={'title': 'a title', 'description': 'description'})
+        Node(criteria='my node').save()
+        serializer = TreeSerializer(data={'title': 'a title', 'description': 'description', 'root_node': 1})
 
         if not serializer.is_valid():
             self.fail(serializer.errors)
@@ -57,7 +58,7 @@ class TreeSerializerTest(TestCase):
         self.assertEqual(tree.title, 'new title')
         self.assertEqual(tree.description, 'desc')
 
-    def test_add_node_to_tree(self):
+    def test_update_tree_with_node(self):
         Tree(slug='a-slug', title='a slug').save()
         Node(criteria='yolo').save()
 
@@ -71,7 +72,7 @@ class TreeSerializerTest(TestCase):
 
         self.assertEqual(tree.root_node.criteria, 'yolo')
 
-    def test_add_invalid_node_to_tree_is_invalid(self):
+    def test_update_tree_with_invalid_node(self):
         serializer = TreeSerializer(data={'title': 'yolo', 'description': 'hello', 'root_node': 44})
 
         if serializer.is_valid():
