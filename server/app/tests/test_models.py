@@ -17,24 +17,25 @@ class TestDecisionTreeModels(TestCase):
     def test_retrieval_of_decision_tree_nodes(self):
         create_complex_decision_tree()
         tree = Tree.objects.first()
+        root_node = tree.root_node
 
-        self.assertEqual(tree.root_node.criteria, 'mood')
-        self.assertEqual(tree.root_node.children.count(), 3)
+        self.assertEqual(root_node.criteria, 'mood')
+        self.assertEqual(root_node.node_set.count(), 3)
 
-        self.assertEqual(tree.root_node.children.all()[0].predicate, 'happy')
-        self.assertEqual(tree.root_node.children.all()[0].criteria, 'how happy')
+        self.assertEqual(root_node.node_set.all()[0].predicate, 'happy')
+        self.assertEqual(root_node.node_set.all()[0].criteria, 'how happy')
 
-        happy_children = tree.root_node.children.all()[0].children.all()
-        self.assertEqual(happy_children[0].predicate, 'very happy')
-        self.assertEqual(happy_children[0].criteria, 'i am glad to hear that')
-        self.assertEqual(happy_children[1].predicate, 'kind of happy')
-        self.assertEqual(happy_children[1].criteria, 'wish you were happier')
+        happy_node_set = root_node.node_set.all()[0].node_set.all()
+        self.assertEqual(happy_node_set[0].predicate, 'very happy')
+        self.assertEqual(happy_node_set[0].criteria, 'i am glad to hear that')
+        self.assertEqual(happy_node_set[1].predicate, 'kind of happy')
+        self.assertEqual(happy_node_set[1].criteria, 'wish you were happier')
 
-        self.assertEqual(tree.root_node.children.all()[1].predicate, 'sad')
-        self.assertEqual(tree.root_node.children.all()[1].criteria, 'i am sorry to hear that')
+        self.assertEqual(root_node.node_set.all()[1].predicate, 'sad')
+        self.assertEqual(root_node.node_set.all()[1].criteria, 'i am sorry to hear that')
 
-        self.assertEqual(tree.root_node.children.all()[2].predicate, 'just ok')
-        self.assertEqual(tree.root_node.children.all()[2].criteria, 'ok then!')
+        self.assertEqual(root_node.node_set.all()[2].predicate, 'just ok')
+        self.assertEqual(root_node.node_set.all()[2].criteria, 'ok then!')
 
     def test_duplicate_slugs_validation(self):
         Tree(slug='yolo', title='swag').save()

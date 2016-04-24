@@ -11,30 +11,17 @@ def create_complex_decision_tree():
     tree.root_node = root_node
     tree.save()
 
-    happy = Node(predicate='happy', criteria='how happy')
+    happy = Node(predicate='happy', criteria='how happy', parent=root_node)
     happy.save()
 
-    very_happy = Node(predicate='very happy', criteria='i am glad to hear that')
+    very_happy = Node(predicate='very happy', criteria='i am glad to hear that', parent=happy)
     very_happy.save()
 
-    kind_of_happy = Node(predicate='kind of happy', criteria='wish you were happier')
+    kind_of_happy = Node(predicate='kind of happy', criteria='wish you were happier', parent=happy)
     kind_of_happy.save()
 
-    happy.children.add(kind_of_happy)
-    happy.children.add(very_happy)
-    happy.save()
-
-    root_node.children.add(happy)
-    root_node.save()
-
-    sad = Node(predicate='sad', criteria='i am sorry to hear that')
+    sad = Node(predicate='sad', criteria='i am sorry to hear that', parent=root_node)
     sad.save()
 
-    root_node.children.add(sad)
-    root_node.save()
-
-    melancholy = Node(predicate='just ok', criteria='ok then!')
+    melancholy = Node(predicate='just ok', criteria='ok then!', parent=root_node)
     melancholy.save()
-
-    root_node.children.add(melancholy)
-    root_node.save()

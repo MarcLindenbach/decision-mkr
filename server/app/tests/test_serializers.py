@@ -1,5 +1,5 @@
 from django.test import TestCase
-from app.serializers import TreeSerializer, NodeSerializer
+from app.serializers import TreeSerializer, ListNodeSerializer, NodeSerializer
 from app.models import Tree, Node
 from .helpers import create_complex_decision_tree
 
@@ -13,28 +13,6 @@ class TreeSerializerTest(TestCase):
         self.assertEqual(serializer.data['slug'], 'slug')
         self.assertEqual(serializer.data['title'], 'title')
         self.assertEqual(serializer.data['description'], 'description')
-
-    def test_serialize_tree_nodes(self):
-        create_complex_decision_tree()
-        serializer = TreeSerializer(Tree.objects.first())
-
-        mood_node = serializer.data['root_node']
-        self.assertEqual(mood_node['criteria'], 'mood')
-
-        mood_children = mood_node['children']
-        self.assertEqual(mood_children[0]['predicate'], 'happy')
-        self.assertEqual(mood_children[1]['predicate'], 'sad')
-        self.assertEqual(mood_children[2]['predicate'], 'just ok')
-
-        self.assertEqual(mood_children[0]['criteria'], 'how happy')
-        self.assertEqual(mood_children[1]['criteria'], 'i am sorry to hear that')
-        self.assertEqual(mood_children[2]['criteria'], 'ok then!')
-
-        happy_children = mood_children[0]['children']
-        self.assertEqual(happy_children[0]['predicate'], 'very happy')
-        self.assertEqual(happy_children[1]['predicate'], 'kind of happy')
-        self.assertEqual(happy_children[0]['criteria'], 'i am glad to hear that')
-        self.assertEqual(happy_children[1]['criteria'], 'wish you were happier')
 
     def test_create_tree(self):
         serializer = TreeSerializer(data={'title': 'a title', 'description': 'description'})
@@ -79,16 +57,33 @@ class TreeSerializerTest(TestCase):
         self.assertEqual(tree.title, 'new title')
         self.assertEqual(tree.description, 'desc')
 
+    def test_add_node_to_tree(self):
+        Tree(slug='a-slug', title='a slug').save()
+        Node(criteria='yolo').save()
 
-class NodeSerializerTest(TestCase):\
+        serializer = TreeSerializer(Tree.objects.first(), data={'root_node': Node.objects.first().id}, partial=True)
+
+        if not serializer.is_valid():
+            self.fail(serializer.errors)
+
+        serializer.save()
+        tree = Tree.objects.first()
+
+        self.assertEqual(tree.root_node.criteria, 'yolo')
+
+    def test_add_invalid_node_to_tree_is_invalid(self):
+        pass
+
+
+class ListNodeSerializerTest(TestCase):
 
     def test_serialize_nodes(self):
         create_complex_decision_tree()
-        serializer = NodeSerializer(Node.objects.first())
+        serializer = ListNodeSerializer(Node.objects.first())
 
         self.assertEqual(serializer.data['criteria'], 'mood')
 
-        mood_children = serializer.data['children']
+        mood_children = serializer.data['node_set']
         self.assertEqual(mood_children[0]['predicate'], 'happy')
         self.assertEqual(mood_children[1]['predicate'], 'sad')
         self.assertEqual(mood_children[2]['predicate'], 'just ok')
@@ -97,8 +92,23 @@ class NodeSerializerTest(TestCase):\
         self.assertEqual(mood_children[1]['criteria'], 'i am sorry to hear that')
         self.assertEqual(mood_children[2]['criteria'], 'ok then!')
 
-        happy_children = mood_children[0]['children']
+        happy_children = mood_children[0]['node_set']
         self.assertEqual(happy_children[0]['predicate'], 'very happy')
         self.assertEqual(happy_children[1]['predicate'], 'kind of happy')
         self.assertEqual(happy_children[0]['criteria'], 'i am glad to hear that')
         self.assertEqual(happy_children[1]['criteria'], 'wish you were happier')
+
+
+class NodeSerializerTest(TestCase):
+
+    def test_serialize_single_node(self):
+        create_complex_decision_tree()
+        serializer = NodeSerializer(Node.objects.first())
+
+        self.assertEqual(serializer.data['criteria'], 'mood')
+        self.assertEqual(serializer.data['parent'], None)
+
+        serializer = NodeSerializer(Node.objects.all()[1])
+        self.assertEqual(serializer.data['predicate'], 'happy')
+        self.assertEqual(serializer.data['criteria'], 'how happy')
+        self.assertEqual(serializer.data['parent'], 1)
