@@ -117,10 +117,41 @@ class NodeSerializerTest(TestCase):
         self.assertEqual(serializer.data['parent'], 1)
 
     def test_create_node(self):
-        pass
+        Node(criteria='the first').save()
+        serializer = NodeSerializer(data={'predicate': 'pred', 'criteria': 'crit', 'parent': Node.objects.first().id})
+
+        if not serializer.is_valid():
+            self.fail(serializer.errors)
+        serializer.save()
+
+        node = Node.objects.last()
+
+        self.assertEqual(node.predicate, 'pred')
+        self.assertEqual(node.criteria, 'crit')
+
+    def test_update_note(self):
+        Node(criteria='the first').save()
+        Node(criteria='the second').save()
+        serializer = NodeSerializer(Node.objects.last(), data={'predicate': 'snd', 'criteria': 'second', 'parent': 1})
+
+        if not serializer.is_valid():
+            self.fail(serializer.errors)
+        serializer.save()
+
+        node = Node.objects.last()
+
+        self.assertEqual(node.predicate, 'snd')
+        self.assertEqual(node.criteria, 'second')
+        self.assertEqual(node.parent_id, 1)
 
     def test_create_node_with_no_criteria_is_invalid(self):
-        pass
+        serializer = NodeSerializer(data={})
+
+        if serializer.is_valid():
+            self.fail('Serialize has no criteria, should be invalid')
 
     def test_create_node_with_invalid_parent_is_invalid(self):
-        pass
+        serializer = NodeSerializer(data={'predicate': 'pred', 'criteria': 'crit', 'parent': 99})
+
+        if serializer.is_valid():
+            self.fail('Parent node 99 should be invalid')

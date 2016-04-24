@@ -29,6 +29,30 @@ class NodeSerializer(serializers.ModelSerializer):
         fields = ('predicate', 'criteria', 'parent')
         depth = 10
 
+    def validate(self, data):
+        if 'parent' in data:
+            parent_pk = data['parent']['pk']
+            if not Node.objects.filter(id=parent_pk).exists():
+                raise serializers.ValidationError('Node %s does not exist' % parent_pk)
+        return data
+
+    def create(self, validated_data):
+        if 'parent' in validated_data:
+            parent_id = validated_data.pop('parent')['pk']
+        instance = Node(**validated_data)
+        if parent_id:
+            instance.parent_id = parent_id
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        if 'parent' in validated_data:
+            instance.parent_id = validated_data['parent']['pk']
+        instance.predicate = validated_data.get('predicate', instance.predicate)
+        instance.criteria = validated_data.get('criteria', instance.criteria)
+        instance.save()
+        return instance
+
 
 class TreeSerializer(serializers.ModelSerializer):
 
