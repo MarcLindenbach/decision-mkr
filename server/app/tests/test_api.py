@@ -85,7 +85,7 @@ class TreeApiTest(APITestCase):
         self.assertEqual(tree.description, 'new desc')
         self.assertEqual(tree.root_node.predicate, 'happy')
 
-    def test_put_tree_invalid_data(self):
+    def test_put_tree_with_no_title(self):
         create_complex_decision_tree()
         response = self.client.put('/trees/slug/', {'description': 'new desc',
                                                     'root_node': 1})
@@ -93,9 +93,37 @@ class TreeApiTest(APITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {'title': ['This field is required.']})
 
+    def test_put_tree_invalid_root_node(self):
+        create_complex_decision_tree()
         response = self.client.put('/trees/slug/', {'title': 'yolo',
                                                     'description': 'new desc',
                                                     'root_node': 999})
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {'non_field_errors': ['Node 999 does not exist']})
+
+
+class NodeAPITest(APITestCase):
+    def test_retrieve_node(self):
+        pass
+
+    def test_post_node(self):
+        pass
+
+    def test_post_node_with_parent(self):
+        pass
+
+    def test_post_node_with_invalid_parent(self):
+        pass
+
+    def test_post_node_with_no_criteria(self):
+        pass
+
+    def test_put_node(self):
+        pass
+
+    def test_put_node_with_invalid_parent(self):
+        pass
+
+    def test_put_node_with_no_criteria(self):
+        pass
