@@ -67,12 +67,16 @@ class TreeSerializer(serializers.ModelSerializer):
         fields = ('slug', 'title', 'description', 'root_node')
         read_only_fields = ('slug', )
         depth = 10
+        m = Node()
 
     def validate(self, data):
         if 'root_node' in data:
             root_pk = data['root_node']['pk']
             if not Node.objects.filter(id=root_pk).exists():
-                raise serializers.ValidationError('Node %s does not exist' % root_pk)
+                raise serializers.ValidationError('Node %s does not exist' % root_pk, )
+            else:
+                if Node.objects.filter(pk=root_pk).first().has_related_tree():
+                    raise serializers.ValidationError('Node %s attached to another list' % root_pk)
         return data
 
     def create(self, validated_data):

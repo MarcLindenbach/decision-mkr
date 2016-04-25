@@ -12,3 +12,11 @@ class Node(models.Model):
     parent = models.ForeignKey('self', null=True)
     predicate = models.CharField(max_length=200, blank=True)
     criteria = models.CharField(max_length=200)
+
+    def has_related_tree(self):
+        has_tree = False
+        try:
+            return self.tree is not None
+        except:
+            pass
+        return has_tree

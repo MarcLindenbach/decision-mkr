@@ -13,7 +13,6 @@ class NodeViewSet(viewsets.ModelViewSet):
     queryset = Node.objects.all()
 
     def get_serializer_class(self):
-        print(self.action)
         if self.action == 'retrieve':
             return NodeListSerializer
         else:

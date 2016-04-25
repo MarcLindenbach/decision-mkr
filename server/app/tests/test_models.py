@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from app.models import Tree, Node
+from app.models import Tree
 from .helpers import create_complex_decision_tree
 
 
