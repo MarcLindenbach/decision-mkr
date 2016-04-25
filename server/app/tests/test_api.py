@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 from .helpers import create_complex_decision_tree
 
 
-class ApiTest(APITestCase):
+class TreeApiTest(APITestCase):
 
     def create_trees(self):
         Tree(slug='slug-1', title='first title', description='1st description').save()
@@ -77,12 +77,13 @@ class ApiTest(APITestCase):
         create_complex_decision_tree()
         response = self.client.put('/trees/slug/', {'title': 'new title',
                                                     'description': 'new desc',
-                                                    'root_node': 1})
+                                                    'root_node': 2})
 
         self.assertEqual(response.status_code, 200)
         tree = Tree.objects.all().filter(slug='slug').first()
         self.assertEqual(tree.title, 'new title')
         self.assertEqual(tree.description, 'new desc')
+        self.assertEqual(tree.root_node.predicate, 'happy')
 
     def test_put_tree_invalid_data(self):
         create_complex_decision_tree()
@@ -98,7 +99,3 @@ class ApiTest(APITestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {'non_field_errors': ['Node 999 does not exist']})
-
-    def test_patch_tree(self):
-        pass
-
