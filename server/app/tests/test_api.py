@@ -84,6 +84,21 @@ class ApiTest(APITestCase):
         self.assertEqual(tree.title, 'new title')
         self.assertEqual(tree.description, 'new desc')
 
+    def test_put_tree_invalid_data(self):
+        create_complex_decision_tree()
+        response = self.client.put('/trees/slug/', {'description': 'new desc',
+                                                    'root_node': 1})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {'title': ['This field is required.']})
+
+        response = self.client.put('/trees/slug/', {'title': 'yolo',
+                                                    'description': 'new desc',
+                                                    'root_node': 999})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {'non_field_errors': ['Node 999 does not exist']})
+
     def test_patch_tree(self):
         pass
 
