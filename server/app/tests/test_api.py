@@ -69,17 +69,20 @@ class ApiTest(APITestCase):
         self.assertEqual(tree.root_node.criteria, 'criteria')
 
     def test_post_tree_with_invalid_root_node(self):
-        create_complex_decision_tree()
-        response = self.client.post('/trees/', {'title': 'slug 1', 'description': 'yolo', 'root_node': 1})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'non_field_errors': ['Node 1 attached to another list']})
-
         response = self.client.post('/trees/', {'title': 'slug 1', 'description': 'yolo', 'root_node': 999})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {'non_field_errors': ['Node 999 does not exist']})
 
     def test_put_tree(self):
-        pass
+        create_complex_decision_tree()
+        response = self.client.put('/trees/slug/', {'title': 'new title',
+                                                    'description': 'new desc',
+                                                    'root_node': 1})
+
+        self.assertEqual(response.status_code, 200)
+        tree = Tree.objects.all().filter(slug='slug').first()
+        self.assertEqual(tree.title, 'new title')
+        self.assertEqual(tree.description, 'new desc')
 
     def test_patch_tree(self):
         pass
