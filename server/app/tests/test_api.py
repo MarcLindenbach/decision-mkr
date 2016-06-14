@@ -104,6 +104,10 @@ class TreeApiTest(APITestCase):
 
 
 class NodeAPITest(APITestCase):
+
+    def test_get_nodes(self):
+        pass
+
     def test_retrieve_node(self):
         pass
 
